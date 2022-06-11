@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import httpLink from "./api";
 import "./index.scss";
-import App from "./components/App/App";
+import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 
 /*configuration cache for apollo client*/

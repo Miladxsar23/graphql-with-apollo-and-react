@@ -1,0 +1,60 @@
+$spin-color: #7d7d7d;
+$spin-size: 25px;
+@mixin flex($type, $wrap, $justify, $align) {
+  display: flex;
+  flex-flow: $type $wrap;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+.Loading {
+  @include flex(row, nowrap, center, center);
+  width: 100%;
+  min-height: 100vh;
+  opacity: 0;
+  & span {
+    width: $spin-size;
+    height: $spin-size;
+    border-radius: 100px;
+    border-top: 3px solid $spin-color;
+    border-right: 3px solid $spin-color;
+    border-left: 3px solid $spin-color;
+    border-bottom: 3px solid transparent;
+    animation: 0.5s spinner ease-out infinite alternate;
+  }
+}
+
+.show {
+  animation: show 1s ease-out;
+}
+
+.fade {
+  animation: fade 1s ease-out;
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes spinner {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}

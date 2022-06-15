@@ -1,7 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import httpLink from "./api";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  from,
+} from "@apollo/client";
+import httpLink, { errorLink } from "./apollo-links";
+import "bootstrap/scss/bootstrap.scss";
 import "./index.scss";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
@@ -10,8 +16,9 @@ import reportWebVitals from "./reportWebVitals";
 const cache = new InMemoryCache();
 /*configuration apollo client*/
 const client = new ApolloClient({
-  link: httpLink,
+  link: from([errorLink, httpLink]),
   cache,
+  connectToDevTools: true
 });
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

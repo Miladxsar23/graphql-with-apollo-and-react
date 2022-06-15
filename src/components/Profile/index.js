@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useQuery, gql } from "@apollo/client";
 import Loading from "../Loading";
-import RepositoryList from "../Repository/RepositoryList";
+import ErrorMessage from "../Error/ErrorMessage";
+import RepositoryList from "../Repository";
 /////////////////////////////////Queries//////////////////////////////////////
 const GET_CURRENT_USER = gql`
   {
@@ -48,7 +49,7 @@ const GET_REPOSITORY_OF_CURRENT_USER = gql`
 const Profile = (props) => {
   const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
   if (loading) return <Loading />;
-  if (error) return "error...";
+  if (error) return <ErrorMessage error={error} />;
   return (
     <div className="Profile">
       <RepositoryList repositories={data.viewer.repositories} />

@@ -13,7 +13,7 @@ const RepositoryItem = ({
   viewerHasStarred,
 }) => {
   return (
-    <div>
+    <div className="RepositoryItem p-3 border-bottom">
       <div className="RepositoryItem-title">
         <h2>
           <Link href={url}>{name}</Link>

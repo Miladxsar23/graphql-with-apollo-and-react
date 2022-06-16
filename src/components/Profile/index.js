@@ -14,7 +14,7 @@ const GET_CURRENT_USER = gql`
 `;
 
 const GET_REPOSITORY_OF_CURRENT_USER = gql`
-  {
+  query getRepositoryOfCurrentUser{
     viewer {
       repositories(first: 5, orderBy: { direction: DESC, field: STARGAZERS }) {
         edges {

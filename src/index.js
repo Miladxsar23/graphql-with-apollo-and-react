@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   from,
 } from "@apollo/client";
-import httpLink, { errorLink } from "./apollo-links";
+import httpLink, { errorLink, timeStartLink } from "./apollo-links";
 import "bootstrap/scss/bootstrap.scss";
 import "./index.scss";
 import App from "./components/App";
@@ -16,7 +16,7 @@ import reportWebVitals from "./reportWebVitals";
 const cache = new InMemoryCache();
 /*configuration apollo client*/
 const client = new ApolloClient({
-  link: from([errorLink, httpLink]),
+  link: from([timeStartLink, errorLink, httpLink]),
   cache,
   connectToDevTools: true
 });

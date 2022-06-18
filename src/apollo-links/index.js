@@ -7,9 +7,9 @@ const httpLink = new HttpLink({
     authorization: `bearer ${process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}`,
   },
 });
-const errorLink = onError(({ graphQlErrors, networkError }) => {
-  if (graphQlErrors) {
-    graphQlErrors.forEach(({ message, location, path }) => {
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, location, path }) => {
       console.log(
         `[GraphQlErrors] : Message : ${message}, Location:${location}, Path:${path}`
       );
@@ -19,12 +19,15 @@ const errorLink = onError(({ graphQlErrors, networkError }) => {
     console.log(`[Network Error] : ${networkError}`);
   }
 });
-//custom link 
-const timeStartLink = new ApolloLink((operation, forward) => {
-  operation.setContext({ start: Date.now() });
-  console.log(operation.getContext())
-  return forward(operation);
+//custom link
+const roundTripLink = new ApolloLink((operation, forward) => {
+  operation.setContext({ start: new Date() });
+  return forward(operation).map((data) => {
+    const responseTime = new Date() - operation.getContext().start;
+    console.log(responseTime);
+    return data;
+  });
 });
 
 export default httpLink;
-export { errorLink, timeStartLink };
+export { errorLink, roundTripLink };

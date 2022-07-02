@@ -47,7 +47,7 @@ const GET_REPOSITORY_OF_CURRENT_USER = gql`
 
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
 const Profile = (props) => {
-  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
+  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER );
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
   return (

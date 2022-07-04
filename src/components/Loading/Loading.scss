@@ -20,7 +20,7 @@ $spin-size: 25px;
     border-right: 3px solid $spin-color;
     border-left: 3px solid $spin-color;
     border-bottom: 3px solid transparent;
-    animation: 0.5s spinner ease-out infinite alternate;
+    animation: 0.5s spinner linear infinite;
   }
 }
 

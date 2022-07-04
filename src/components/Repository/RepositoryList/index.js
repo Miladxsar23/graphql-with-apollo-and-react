@@ -1,15 +1,18 @@
-import * as React from "react";
+import React, { useMemo } from "react";
 import RepositoryItem from "../RepositoryItem";
 import "./RepositoryList.scss";
 
 const RepositoryList = ({ repositories }) => {
-  return repositories.edges.map(({ node }) => {
-    return (
-      <div key={node.id} className="RepositoryItem p-3">
-        <RepositoryItem {...node} />
-      </div>
-    );
-  });
+  const repoList = useMemo(() => {
+    return repositories.edges.map(({ node }) => {
+      return (
+        <div key={node.id} className="p-3 col-md-6 col-sm-12">
+          <RepositoryItem {...node} />
+        </div>
+      );
+    });
+  }, [repositories]);
+  return <div className="RepositoryList row">{repoList}</div>;
 };
 
 export default RepositoryList;

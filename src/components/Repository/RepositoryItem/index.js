@@ -13,11 +13,11 @@ const RepositoryItem = ({
   viewerHasStarred,
 }) => {
   return (
-    <div className="RepositoryItem p-3 border-bottom">
+    <div className="RepositoryItem p-3 border">
       <div className="RepositoryItem-title">
-        <h2>
+        <h5>
           <Link href={url}>{name}</Link>
-        </h2>
+        </h5>
 
         <div className="RepositoryItem-title-action">
           {stargazers.totalCount} Stars

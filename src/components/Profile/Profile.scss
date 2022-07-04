@@ -1,0 +1,15 @@
+@mixin flex($t, $w, $j, $a) {
+  display: flex;
+  flex-flow: $t $w;
+  justify-content: $j;
+  align-items: $a;
+}
+.Profile {
+  width: 100%;
+  &_info {
+    min-height: 100vh;
+    background-color: #e7e7e7;
+  }
+  &_repositories {
+  }
+}

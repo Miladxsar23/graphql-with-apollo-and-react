@@ -1,6 +1,19 @@
 import * as React from "react";
+import { useMutation, gql } from "@apollo/client";
 import Link from "../../Link";
 import "./RepositoryItem.scss";
+
+// mutaions
+const STAR_REPOSITORY = gql`
+  mutation STAR_REPOSITORY($id: ID!) {
+    addStar(input: { starrableId: $id }) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
 const RepositoryItem = ({
   name,
   url,
@@ -46,4 +59,4 @@ const RepositoryItem = ({
   );
 };
 
-export default RepositoryItem
+export default RepositoryItem;

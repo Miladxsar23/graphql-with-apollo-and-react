@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useMutation, gql } from "@apollo/client";
 import Link from "../../Link";
+import Button from "../../Button";
 import "./RepositoryItem.scss";
 
 // mutaions
@@ -10,11 +11,40 @@ const STAR_REPOSITORY = gql`
       starrable {
         id
         viewerHasStarred
+        stargazers {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+
+const REMOVE_STAR = gql`
+  mutation RemoveStar($id: ID!) {
+    removeStar(input: { starrableId: $id }) {
+      starrable {
+        id
+        viewerHasStarred
+        stargazers {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+
+const UPDATE_SUBSCRIPTION = gql`
+  mutation updateSubscription($id: ID!, $state: SubscriptionState!) {
+    updateSubscription(input: { subscribableId: $id, state: $state }) {
+      subscribable {
+        id
+        viewerSubscription
       }
     }
   }
 `;
 const RepositoryItem = ({
+  id,
   name,
   url,
   descriptionHTML,
@@ -25,19 +55,68 @@ const RepositoryItem = ({
   viewerSubscription,
   viewerHasStarred,
 }) => {
+  const [addStar, addStarPayload] = useMutation(STAR_REPOSITORY, {
+    variables: { id },
+  });
+  const [removeStar, removeStarPayload] = useMutation(REMOVE_STAR, {
+    variables: { id },
+  });
+  const [updateSubscription, updateSubscriptionPayLoad] = useMutation(
+    UPDATE_SUBSCRIPTION,
+    {
+      variables: { id },
+    }
+  );
+  const loading =
+    addStarPayload.loading ||
+    removeStarPayload.loading ||
+    updateSubscriptionPayLoad.loading;
+  const error =
+    addStarPayload.error ||
+    removeStarPayload.error ||
+    updateSubscriptionPayLoad.error;
+  if (error) return `error : ${error.message}`;
   return (
     <div className="RepositoryItem p-3 border">
-      <div className="RepositoryItem-title">
-        <h5>
-          <Link href={url}>{name}</Link>
-        </h5>
+      <div className="RepositoryItem-header d-flex justify-content-between">
+        <div className="RepositoryItem-header-title w-100">
+          <h6>
+            <Link href={url}>{name}</Link>
+          </h6>
+        </div>
 
-        <div className="RepositoryItem-title-action">
-          {stargazers.totalCount} Stars
+        <div className="RepositoryItem-header-actions d-flex w-50">
+          <Button
+            size="sm"
+            color="warning"
+            onClick={viewerHasStarred ? removeStar : addStar}
+            disabled={loading}
+          >
+            {stargazers.totalCount}
+          </Button>
+          <select
+            className="form-select form-select-sm"
+            value={viewerSubscription}
+            onChange={(e) => {
+              const { value } = e.target;
+              updateSubscription({
+                variables: {
+                  state: value,
+                },
+              });
+            }}
+          >
+            <option value="UNSUBSCRIBED">Unwatch</option>
+            <option value="SUBSCRIBED">Watch</option>
+            <option value="IGNORED">Ignore</option>
+          </select>
         </div>
       </div>
 
       <div className="RepositoryItem-description">
+        <div className="RepositoryItem-description-action">
+          {stargazers.totalCount} Stars
+        </div>
         <div
           className="RepositoryItem-description-info"
           dangerouslySetInnerHTML={{ __html: descriptionHTML }}

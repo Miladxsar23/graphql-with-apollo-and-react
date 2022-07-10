@@ -2,6 +2,7 @@ import * as React from "react";
 import { useMutation, gql } from "@apollo/client";
 import Link from "../../Link";
 import Button from "../../Button";
+import REPOSITORY_FRAGMENT from "../fragments";
 import "./RepositoryItem.scss";
 
 // mutaions
@@ -11,9 +12,6 @@ const STAR_REPOSITORY = gql`
       starrable {
         id
         viewerHasStarred
-        stargazers {
-          totalCount
-        }
       }
     }
   }
@@ -25,9 +23,6 @@ const REMOVE_STAR = gql`
       starrable {
         id
         viewerHasStarred
-        stargazers {
-          totalCount
-        }
       }
     }
   }
@@ -43,6 +38,88 @@ const UPDATE_SUBSCRIPTION = gql`
     }
   }
 `;
+// update method to update apollo cache after mutations
+const updateAddStar = (
+  cache,
+  {
+    data: {
+      addStar: {
+        starrable: { id },
+      },
+    },
+  }
+) => {
+  const repository = cache.readFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+  });
+  const totalCount = repository.stargazers.totalCount + 1;
+  cache.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: {
+      ...repository,
+      stargazers: {
+        __typename: "StargazerConnection",
+        totalCount,
+      },
+    },
+  });
+};
+
+const updateRemoveStar = (
+  cache,
+  {
+    data: {
+      removeStar: {
+        starrable: { id },
+      },
+    },
+  }
+) => {
+  const repository = cache.readFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+  });
+  const totalCount = repository.stargazers.totalCount - 1;
+  cache.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: {
+      ...repository,
+      stargazers: {
+        __typename: "StargazerConnection",
+        totalCount,
+      },
+    },
+  });
+};
+
+const updateSubscriptionCallback = (
+  cache,
+  {
+    data: {
+      updateSubscription: {
+        subscribable: { id, viewerSubscription },
+      },
+    },
+  }
+) => {
+  const repository = cache.readFragment({
+    id: `Repository : ${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+  });
+  cache.writeFragment({
+    id: `"Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: {
+      ...repository,
+      viewerSubscription: viewerSubscription,
+    },
+  });
+};
+
+// Component
 const RepositoryItem = ({
   id,
   name,
@@ -57,9 +134,11 @@ const RepositoryItem = ({
 }) => {
   const [addStar, addStarPayload] = useMutation(STAR_REPOSITORY, {
     variables: { id },
+    update: updateAddStar,
   });
   const [removeStar, removeStarPayload] = useMutation(REMOVE_STAR, {
     variables: { id },
+    update: updateRemoveStar,
   });
   const [updateSubscription, updateSubscriptionPayLoad] = useMutation(
     UPDATE_SUBSCRIPTION,

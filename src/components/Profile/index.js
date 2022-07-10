@@ -3,6 +3,7 @@ import { useQuery, gql } from "@apollo/client";
 import Loading from "../Loading";
 import ErrorMessage from "../Error/ErrorMessage";
 import RepositoryList from "../Repository";
+import { REPOSITORY_FRAGMENT } from "../Repository";
 import "./Profile.scss";
 /////////////////////////////////Queries//////////////////////////////////////
 const GET_CURRENT_USER = gql`
@@ -20,30 +21,13 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
       repositories(first: 5, orderBy: { direction: DESC, field: STARGAZERS }) {
         edges {
           node {
-            id
-            name
-            url
-            descriptionHTML
-            primaryLanguage {
-              name
-            }
-            owner {
-              login
-              url
-            }
-            stargazers {
-              totalCount
-            }
-            viewerHasStarred
-            watchers {
-              totalCount
-            }
-            viewerSubscription
+            ...repository
           }
         }
       }
     }
   }
+  ${REPOSITORY_FRAGMENT}
 `;
 
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////

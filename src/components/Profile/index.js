@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, ApolloProvider } from "@apollo/client";
 import Loading from "../Loading";
 import ErrorMessage from "../Error/ErrorMessage";
 import RepositoryList from "../Repository";
@@ -32,7 +32,8 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
 
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
 const Profile = (props) => {
-  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
+  const { loading, error, data, client } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
+  console.log(client)
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
   return (

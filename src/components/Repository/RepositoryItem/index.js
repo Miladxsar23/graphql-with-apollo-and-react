@@ -144,6 +144,7 @@ const RepositoryItem = ({
     UPDATE_SUBSCRIPTION,
     {
       variables: { id },
+      update: updateSubscriptionCallback,
     }
   );
   const loading =

@@ -135,10 +135,28 @@ const RepositoryItem = ({
   const [addStar, addStarPayload] = useMutation(STAR_REPOSITORY, {
     variables: { id },
     update: updateAddStar,
+    optimisticResponse: {
+      addStar: {
+        starrable: {
+          __typename: "Repository",
+          id: id,
+          viewerHasStarred: true,
+        },
+      },
+    },
   });
   const [removeStar, removeStarPayload] = useMutation(REMOVE_STAR, {
     variables: { id },
     update: updateRemoveStar,
+    optimisticResponse: {
+      removeStar: {
+        starrable: {
+          __typename: "Repository",
+          id,
+          viewerHasStarred: false,
+        },
+      },
+    },
   });
   const [updateSubscription, updateSubscriptionPayLoad] = useMutation(
     UPDATE_SUBSCRIPTION,
@@ -182,6 +200,15 @@ const RepositoryItem = ({
               updateSubscription({
                 variables: {
                   state: value,
+                },
+                optimisticResponse: {
+                  updateSubscription: {
+                    subscribable: {
+                      id,
+                      __typename: "Repository",
+                      viewerSubscription: value,
+                    },
+                  },
                 },
               });
             }}

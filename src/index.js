@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   from,
 } from "@apollo/client";
-import httpLink, {errorLink, roundTripLink } from "./apollo-links";
+import httpLink, { errorLink, roundTripLink } from "./apollo-links";
 import "bootstrap/scss/bootstrap.scss";
 import "./index.scss";
 import App from "./components/App";
@@ -18,7 +18,7 @@ const cache = new InMemoryCache();
 const client = new ApolloClient({
   link: from([roundTripLink, errorLink, httpLink]),
   cache,
-  connectToDevTools: true
+  connectToDevTools: true,
 });
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

@@ -1,10 +1,14 @@
 import { HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { stripIgnoredCharacters, ASTNode } from "graphql";
 const GITHUB_BASE_URL = "https://api.github.com/graphql";
 const httpLink = new HttpLink({
   uri: GITHUB_BASE_URL,
   headers: {
     authorization: `bearer ${process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}`,
+  },
+  print(ast, orginalPrint) {
+    return stripIgnoredCharacters(orginalPrint(ast));
   },
 });
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -22,10 +26,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 //custom link
 const roundTripLink = new ApolloLink((operation, forward) => {
   operation.setContext({ start: new Date() });
-  return forward(operation).map((data) => {
+  return forward(operation).map((response) => {
     const responseTime = new Date() - operation.getContext().start;
-    console.log(responseTime);
-    return data;
+    return response;
   });
 });
 

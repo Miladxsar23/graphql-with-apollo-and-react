@@ -1,6 +1,7 @@
 import { HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-import { stripIgnoredCharacters, ASTNode } from "graphql";
+import { stripIgnoredCharacters } from "graphql";
+import { RetryLink } from "@apollo/client/link/retry";
 const GITHUB_BASE_URL = "https://api.github.com/graphql";
 const httpLink = new HttpLink({
   uri: GITHUB_BASE_URL,
@@ -11,18 +12,32 @@ const httpLink = new HttpLink({
     return stripIgnoredCharacters(orginalPrint(ast));
   },
 });
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, location, path }) => {
-      console.log(
-        `[GraphQlErrors] : Message : ${message}, Location:${location}, Path:${path}`
-      );
-    });
+const errorLink = onError(
+  ({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        switch (err.extensions.code) {
+          case "UNAUTHENTICATED":
+            const oldHeaders = operation.getContext().headers;
+            operation.setContext({
+              headers: {
+                ...oldHeaders,
+                authentication: localStorage.getItem("token"),
+              },
+            });
+            return forward(operation);
+          default:
+            continue;
+        }
+      }
+    }
+    if (networkError) {
+      console.log(`[Network Error] : ${networkError}`);
+    }
   }
-  if (networkError) {
-    console.log(`[Network Error] : ${networkError}`);
-  }
-});
+);
+//retry link
+const retryLink = new RetryLink();
 //custom link
 const roundTripLink = new ApolloLink((operation, forward) => {
   operation.setContext({ start: new Date() });
@@ -33,4 +48,4 @@ const roundTripLink = new ApolloLink((operation, forward) => {
 });
 
 export default httpLink;
-export { errorLink, roundTripLink };
+export { errorLink, roundTripLink, retryLink };

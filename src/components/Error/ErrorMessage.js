@@ -4,7 +4,7 @@ const ErrorMessage = ({ error }) => {
   const variant = "danger";
   return (
     <Alert transition={false} variant={variant}>
-      {error.message}
+      <small>{error.toString()}</small>
     </Alert>
   );
 };

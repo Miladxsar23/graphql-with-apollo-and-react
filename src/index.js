@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   from,
 } from "@apollo/client";
-import httpLink, { errorLink, roundTripLink } from "./apollo-links";
+import httpLink, { errorLink, roundTripLink, retryLink } from "./apollo-links";
 import "bootstrap/scss/bootstrap.scss";
 import "./index.scss";
 import App from "./components/App";
@@ -16,7 +16,7 @@ import reportWebVitals from "./reportWebVitals";
 const cache = new InMemoryCache();
 /*configuration apollo client*/
 const client = new ApolloClient({
-  link: from([roundTripLink, errorLink, httpLink]),
+  link: from([roundTripLink, errorLink, retryLink, httpLink]),
   cache,
   connectToDevTools: true,
 });

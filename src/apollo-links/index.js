@@ -2,7 +2,10 @@ import { HttpLink, ApolloLink } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { stripIgnoredCharacters } from "graphql";
 import { RetryLink } from "@apollo/client/link/retry";
+import { sha256 } from "crypto-hash";
+import { createPersistedQueryLink } from "@apollo/client/link/persisted-queries";
 const GITHUB_BASE_URL = "https://api.github.com/graphql";
+const persistedQueryLink = createPersistedQueryLink({sha256, disable : () => true})
 const httpLink = new HttpLink({
   uri: GITHUB_BASE_URL,
   headers: {
@@ -16,7 +19,8 @@ const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors) {
       for (let err of graphQLErrors) {
-        switch (err.extensions.code) {
+        console.log(err)
+        switch (err?.extensions?.code) {
           case "UNAUTHENTICATED":
             const oldHeaders = operation.getContext().headers;
             operation.setContext({
@@ -48,4 +52,4 @@ const roundTripLink = new ApolloLink((operation, forward) => {
 });
 
 export default httpLink;
-export { errorLink, roundTripLink, retryLink };
+export { errorLink, persistedQueryLink, roundTripLink, retryLink };

@@ -7,7 +7,7 @@ import "./RepositoryItem.scss";
 
 // mutaions
 const STAR_REPOSITORY = gql`
-  mutation STAR_REPOSITORY($id: ID!) {
+  mutation AddStar($id: ID!) {
     addStar(input: { starrableId: $id }) {
       starrable {
         id
@@ -38,6 +38,7 @@ const UPDATE_SUBSCRIPTION = gql`
     }
   }
 `;
+
 // update method to update apollo cache after mutations
 const updateAddStar = (
   cache,
@@ -49,22 +50,13 @@ const updateAddStar = (
     },
   }
 ) => {
-  const repository = cache.readFragment({
-    id: `Repository:${id}`,
-    fragment: REPOSITORY_FRAGMENT,
-  });
-  const totalCount = repository.stargazers.totalCount + 1;
-  cache.writeFragment({
-    id: `Repository:${id}`,
-    fragment: REPOSITORY_FRAGMENT,
-    data: {
-      ...repository,
-      stargazers: {
-        __typename: "StargazerConnection",
-        totalCount,
-      },
-    },
-  });
+  cache.updateFragment(
+    { fragment: REPOSITORY_FRAGMENT, id: `Repository:${id}` },
+    (repo) => {
+      const totalCount = repo.stargazers.totalCount + 1;
+      return { ...repo, stargazers: { totalCount, __typename: "StargazerConnection"} };
+    }
+  );
 };
 
 const updateRemoveStar = (

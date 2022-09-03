@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import RepositoryItem from "../RepositoryItem";
 import "./RepositoryList.scss";
 
-const RepositoryList = ({ repositories }) => {
+function RepositoryList({ repositories }){
   const repoList = useMemo(() => {
     return repositories.edges.map(({ node }) => {
       return (

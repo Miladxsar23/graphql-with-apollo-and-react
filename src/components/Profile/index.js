@@ -31,10 +31,8 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
 `;
 
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
-const Profile = (props) => {
-  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER, {
-    displayName : "Salam"
-  });
+function Profile(props){
+  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
   return (
@@ -47,4 +45,4 @@ const Profile = (props) => {
   );
 };
 
-export default Profile;
+export default React.memo(Profile);

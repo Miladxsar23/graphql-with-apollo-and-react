@@ -54,7 +54,10 @@ const updateAddStar = (
     { fragment: REPOSITORY_FRAGMENT, id: `Repository:${id}` },
     (repo) => {
       const totalCount = repo.stargazers.totalCount + 1;
-      return { ...repo, stargazers: { totalCount, __typename: "StargazerConnection"} };
+      return {
+        ...repo,
+        stargazers: { totalCount, __typename: "StargazerConnection" },
+      };
     }
   );
 };
@@ -98,14 +101,20 @@ const updateSubscriptionCallback = (
   }
 ) => {
   const repository = cache.readFragment({
-    id: `Repository : ${id}`,
+    id: `Repository:${id}`,
     fragment: REPOSITORY_FRAGMENT,
   });
+  let { totalCount } = repository.watchers;
+  totalCount =
+    viewerSubscription === "SUBSCRIBED" ? totalCount + 1 : totalCount - 1;
   cache.writeFragment({
-    id: `"Repository:${id}`,
+    id: `Repository:${id}`,
     fragment: REPOSITORY_FRAGMENT,
     data: {
       ...repository,
+      watchers: {
+        totalCount,
+      },
       viewerSubscription: viewerSubscription,
     },
   });
@@ -165,7 +174,7 @@ const RepositoryItem = ({
     addStarPayload.error ||
     removeStarPayload.error ||
     updateSubscriptionPayLoad.error;
-  if (error) return `error : ${error.message}`;
+  
   return (
     <div className="RepositoryItem p-3 border">
       <div className="RepositoryItem-header d-flex justify-content-between">
@@ -195,9 +204,10 @@ const RepositoryItem = ({
                 },
                 optimisticResponse: {
                   updateSubscription: {
+                    __typename:"Mutation",
                     subscribable: {
                       id,
-                      __typename: "Repository",
+                      __typename: "Subscribable",
                       viewerSubscription: value,
                     },
                   },

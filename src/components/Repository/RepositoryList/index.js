@@ -37,7 +37,7 @@ function RepositoryList({ repositories, fetchMore }){
     <React.Fragment>
       <div className="RepositoryList row">{repoList}</div>
       {repositories.pageInfo.hasNextPage && (
-        <button onClick={() => fetchMore({
+        <button className="btn btn-primary d-block mx-auto my-3" onClick={() => fetchMore({
           variables : {
             cursor : repositories.pageInfo.endCursor, 
           },

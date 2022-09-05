@@ -16,9 +16,13 @@ const GET_CURRENT_USER = gql`
 `;
 
 export const GET_REPOSITORY_OF_CURRENT_USER = gql`
-  query getRepositoryOfCurrentUser {
+  query getRepositoryOfCurrentUser($cursor : String) {
     viewer {
-      repositories(first: 5, orderBy: { direction: DESC, field: STARGAZERS }) {
+      repositories(first: 5, orderBy: { direction: DESC, field: STARGAZERS }, after : $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
         edges {
           node {
             ...repository
@@ -32,14 +36,16 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
 
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
 function Profile(props){
-  const { loading, error, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER);
+  const { loading, error, fetchMore, data } = useQuery(GET_REPOSITORY_OF_CURRENT_USER, {
+    notifyOnNetworkStatusChange : true
+  });
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
   return (
     <div className="Profile row pt-3">
       <div className="Profile_info col-md-3 col-sm-12"></div>
       <div className="Profile_repositories col-md-9 col-sm-12">
-        <RepositoryList repositories={data.viewer.repositories} />
+        <RepositoryList repositories={data.viewer.repositories} fetchMore={fetchMore} />
       </div>
     </div>
   );

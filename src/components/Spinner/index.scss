@@ -1,0 +1,26 @@
+// variables
+$spin-color: #7d7d7d;
+$spin-size: 25px;
+// styles
+.Spinner {
+  &-indicator {
+    width: $spin-size;
+    height: $spin-size;
+    border-radius: 100px;
+    border-top: 3px solid $spin-color;
+    border-right: 3px solid $spin-color;
+    border-left: 3px solid $spin-color;
+    border-bottom: 3px solid transparent;
+    animation: 0.5s spinner linear infinite;
+  }
+}
+// animations
+@keyframes spinner {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(1turn);
+    }
+  }
+  

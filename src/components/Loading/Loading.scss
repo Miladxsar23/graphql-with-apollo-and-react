@@ -37,13 +37,13 @@ $spin-size: 25px;
     opacity: 0;
   }
   to {
-    opacity: 1;
+    opacity: 0.5;
   }
 }
 
 @keyframes fade {
   from {
-    opacity: 1;
+    opacity: 0.5;
   }
   to {
     opacity: 0;

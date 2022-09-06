@@ -1,29 +1,28 @@
 import React, { useMemo } from "react";
+import FetchMore from '../../FetchMore'
 import RepositoryItem from "../RepositoryItem";
 import "./RepositoryList.scss";
 
-
-
-function updateQuery(exiting, {fetchMoreResult}) {
-  if(!fetchMoreResult) {
-    return exiting
+function updateQuery(exiting, { fetchMoreResult }) {
+  if (!fetchMoreResult) {
+    return exiting;
   }
   return {
-    ...exiting, 
-    viewer : {
-      ...exiting.viewer, 
-      repositories : {
+    ...exiting,
+    viewer: {
+      ...exiting.viewer,
+      repositories: {
         ...exiting.viewer.repositories,
         ...fetchMoreResult.viewer.repositories,
         edges: [
           ...exiting.viewer.repositories.edges,
-          ...fetchMoreResult.viewer.repositories.edges
-        ]
-      }
-    }
-  }
+          ...fetchMoreResult.viewer.repositories.edges,
+        ],
+      },
+    },
+  };
 }
-function RepositoryList({ repositories, fetchMore }){
+function RepositoryList({ fetchMore, loading, repositories }) {
   const repoList = useMemo(() => {
     return repositories.edges.map(({ node }) => {
       return (
@@ -36,18 +35,19 @@ function RepositoryList({ repositories, fetchMore }){
   return (
     <React.Fragment>
       <div className="RepositoryList row">{repoList}</div>
-      {repositories.pageInfo.hasNextPage && (
-        <button className="btn btn-primary d-block mx-auto my-3" onClick={() => fetchMore({
-          variables : {
-            cursor : repositories.pageInfo.endCursor, 
-          },
-          updateQuery
-        })}>
-          More
-        </button>
-      )}
+      <FetchMore 
+        fetchMore={fetchMore}
+        hasNextPage={repositories.pageInfo.hasNextPage}
+        loading={loading}
+        variables={{
+          cursor : repositories.pageInfo.endCursor
+        }}
+        updateQuery={updateQuery}
+      >
+        more
+      </FetchMore>
     </React.Fragment>
-  )
-};
+  );
+}
 
 export default RepositoryList;

@@ -5,16 +5,7 @@ import ErrorMessage from "../Error/ErrorMessage";
 import RepositoryList from "../Repository";
 import { REPOSITORY_FRAGMENT } from "../Repository";
 import "./Profile.scss";
-/////////////////////////////////Queries//////////////////////////////////////
-const GET_CURRENT_USER = gql`
-  {
-    viewer {
-      login
-      name
-    }
-  }
-`;
-
+/////////////////////////////////documents//////////////////////////////////////
 export const GET_REPOSITORY_OF_CURRENT_USER = gql`
   query getRepositoryOfCurrentUser($cursor: String) {
     viewer {
@@ -37,7 +28,6 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
   }
   ${REPOSITORY_FRAGMENT}
 `;
-
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
 function Profile(props) {
   const { loading, error, fetchMore, data } = useQuery(

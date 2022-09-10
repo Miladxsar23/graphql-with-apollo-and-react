@@ -2,30 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import {
   ApolloClient,
-  InMemoryCache,
   ApolloProvider,
   from,
 } from "@apollo/client";
 import httpLink, { errorLink, persistedQueryLink, roundTripLink, retryLink } from "./apollo-links";
+import cache from "./apollo-cache";
 import "bootstrap/scss/bootstrap.scss";
 import "./index.scss";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
-
-/*configuration cache for apollo client*/
-const cache = new InMemoryCache({
-  typePolicies : {
-    Repository : {
-      fields : {
-        name : {
-          read(name) {
-            return name.toUpperCase()
-          }
-        }
-      }
-    }
-  }
-});
 /*configuration apollo client*/
 const client = new ApolloClient({
   link: from([roundTripLink, persistedQueryLink, errorLink, retryLink, httpLink]),

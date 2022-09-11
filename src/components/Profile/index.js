@@ -9,6 +9,7 @@ import "./Profile.scss";
 export const GET_REPOSITORY_OF_CURRENT_USER = gql`
   query getRepositoryOfCurrentUser($cursor: String) {
     viewer {
+      id
       repositories(
         first: 5
         orderBy: { direction: DESC, field: STARGAZERS }

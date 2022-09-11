@@ -3,25 +3,25 @@ import FetchMore from '../../FetchMore'
 import RepositoryItem from "../RepositoryItem";
 import "./RepositoryList.scss";
 
-function updateQuery(exiting, { fetchMoreResult }) {
-  if (!fetchMoreResult) {
-    return exiting;
-  }
-  return {
-    ...exiting,
-    viewer: {
-      ...exiting.viewer,
-      repositories: {
-        ...exiting.viewer.repositories,
-        ...fetchMoreResult.viewer.repositories,
-        edges: [
-          ...exiting.viewer.repositories.edges,
-          ...fetchMoreResult.viewer.repositories.edges,
-        ],
-      },
-    },
-  };
-}
+// function updateQuery(exiting, { fetchMoreResult }) {
+//   if (!fetchMoreResult) {
+//     return exiting;
+//   }
+//   return {
+//     ...exiting,
+//     viewer: {
+//       ...exiting.viewer,
+//       repositories: {
+//         ...exiting.viewer.repositories,
+//         ...fetchMoreResult.viewer.repositories,
+//         edges: [
+//           ...exiting.viewer.repositories.edges,
+//           ...fetchMoreResult.viewer.repositories.edges,
+//         ],
+//       },
+//     },
+//   };
+// }
 function RepositoryList({ fetchMore, loading, repositories }) {
   const repoList = useMemo(() => {
     return repositories.edges.map(({ node }) => {
@@ -42,7 +42,6 @@ function RepositoryList({ fetchMore, loading, repositories }) {
         variables={{
           cursor : repositories.pageInfo.endCursor
         }}
-        updateQuery={updateQuery}
       >
         more
       </FetchMore>

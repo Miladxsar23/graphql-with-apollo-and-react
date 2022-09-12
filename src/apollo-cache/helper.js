@@ -1,4 +1,4 @@
-function mergedEdges(existing, incoming, readField, mergeObjects) {
+function customRelayStylePagination(existing, incoming, readField, mergeObjects) {
   let merged = existing.edges ? existing.edges.slice(0) : [];
   let nodeNameToIndex = Object.create(null);
   if (existing.edges) {
@@ -20,4 +20,4 @@ function mergedEdges(existing, incoming, readField, mergeObjects) {
   return merged;
 }
 
-export {mergedEdges}
+export {customRelayStylePagination}

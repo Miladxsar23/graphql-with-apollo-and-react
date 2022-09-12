@@ -1,5 +1,5 @@
 import { InMemoryCache } from "@apollo/client";
-import { mergedEdges } from "./helper";
+import { relayStylePagination } from "@apollo/client/utilities";
 /*configuration cache for apollo client*/
 const cache = new InMemoryCache({
   typePolicies: {
@@ -14,18 +14,7 @@ const cache = new InMemoryCache({
     },
     User: {
       fields: {
-        repositories: {
-          keyArgs : false, 
-          merge(existing, incoming, { readField, mergeObjects }) {
-            if (!existing) return incoming;
-            if (!incoming) return existing;
-            return {
-              ...existing,
-              ...incoming,
-              edges: mergedEdges(existing, incoming, readField, mergeObjects),
-            };
-          },
-        },
+        repositories: relayStylePagination(),
       },
     },
   },

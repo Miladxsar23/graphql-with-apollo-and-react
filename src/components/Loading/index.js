@@ -3,9 +3,9 @@ import "./Loading.scss";
 const Loading = (props) => {
   const [classes, setClasses] = useState("Loading");
   useEffect(() => {
-    setClasses("Loading show");
+    setClasses("Loading show-loading");
     return () => {
-      setClasses("Loading fade");
+      setClasses("Loading fade-loading");
     };
   }, []);
   return (

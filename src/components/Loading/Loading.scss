@@ -24,15 +24,15 @@ $spin-size: 25px;
   }
 }
 
-.show {
-  animation: show 1s ease-out;
+.show-loading {
+  animation: show-loading 1s ease-out;
 }
 
-.fade {
-  animation: fade 1s ease-out;
+.fade-loading {
+  animation: fade-loading 1s ease-out;
 }
 
-@keyframes show {
+@keyframes show-loading {
   from {
     opacity: 0;
   }
@@ -41,7 +41,7 @@ $spin-size: 25px;
   }
 }
 
-@keyframes fade {
+@keyframes fade-loading {
   from {
     opacity: 0.5;
   }

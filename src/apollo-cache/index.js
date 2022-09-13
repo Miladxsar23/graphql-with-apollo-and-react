@@ -17,6 +17,11 @@ const cache = new InMemoryCache({
         repositories: relayStylePagination(),
       },
     },
+    Organization: {
+      fields: {
+        repositories: relayStylePagination(),
+      },
+    },
   },
 });
 

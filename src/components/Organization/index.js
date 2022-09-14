@@ -4,6 +4,7 @@ import RepositoryList from "../Repository";
 import { REPOSITORY_FRAGMENT } from "../Repository";
 import ErrorMessage from "../Error/ErrorMessage";
 import Loading from "../Loading";
+import { useSearchParams } from "react-router-dom";
 // graphQL documents
 const GET_REPOSITORY_OF_ORGANIZATION = gql`
   query GetRepositoryFromOrganization(
@@ -11,7 +12,7 @@ const GET_REPOSITORY_OF_ORGANIZATION = gql`
     $cursor: String
   ) {
     organization(login: $organizationName) {
-        id
+      id
       repositories(first: 5, after: $cursor) {
         pageInfo {
           hasNextPage
@@ -28,7 +29,9 @@ const GET_REPOSITORY_OF_ORGANIZATION = gql`
   ${REPOSITORY_FRAGMENT}
 `;
 
-function Organization({ organizationName }) {
+function Organization() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const organizationName = searchParams.get("organization") || "";
   const { data, error, fetchMore, loading } = useQuery(
     GET_REPOSITORY_OF_ORGANIZATION,
     {
@@ -42,16 +45,20 @@ function Organization({ organizationName }) {
   if (loading && !data?.organization) return <Loading />;
   if (error) return <ErrorMessage error={error} />;
   return (
-    <div className="Profile row pt-3">
-      <div className="Profile_info col-md-3 col-sm-12"></div>
-      <div className="Profile_repositories col-md-9 col-sm-12">
-        <RepositoryList
-          repositories={data.organization.repositories}
-          fetchMore={fetchMore}
-          loading={loading}
-        />
-      </div>
-    </div>
+    <>
+      {data ? (
+        <div className="Profile row pt-3">
+          <div className="Profile_info col-md-3 d-none d-lg-block"></div>
+          <div className="Profile_repositories col-md-9 col-sm-12">
+            <RepositoryList
+              repositories={data.organization.repositories || {}}
+              fetchMore={fetchMore}
+              loading={loading}
+            />
+          </div>
+        </div>
+      ) : <div className="d-flex justify-content-center align-items-center vh-100">please search a organiation...</div>}
+    </>
   );
 }
 

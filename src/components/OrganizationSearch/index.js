@@ -1,16 +1,15 @@
 import * as React from "react";
+import { useRef } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { useSearchParams } from "react-router-dom";
 
-function OrganizationSearch({ organizationName, onOrganizationSearch }) {
-  const [search, setSerach] = React.useState(organizationName);
+function OrganizationSearch() {
+  const [searchParams, setSerachParams] = useSearchParams()
+  const inputEL = useRef(null)
   const onSubmit = (evt) => {
     evt.preventDefault();
-    onOrganizationSearch(search);
-  };
-  const onChange = (evt) => {
-    const { value } = evt.target;
-    setSerach(value);
+    setSerachParams({organization : inputEL.current.value});
   };
   return (
     <Form className="d-flex" onSubmit={onSubmit}>
@@ -19,8 +18,8 @@ function OrganizationSearch({ organizationName, onOrganizationSearch }) {
         placeholder="Search"
         className="me-2"
         aria-label="Search"
-        onChange={onChange}
-        value={search}
+        ref={inputEL}
+        defaultValue={searchParams.get("organization") || ""}
       />
       <Button variant="outline-success" type="submit">
         Search

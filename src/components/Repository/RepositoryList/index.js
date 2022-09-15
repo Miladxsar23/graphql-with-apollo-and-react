@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import FetchMore from '../../FetchMore'
+import Issues from '../../Issue'
 import RepositoryItem from "../RepositoryItem";
 import "./RepositoryList.scss";
 
@@ -9,6 +10,10 @@ function RepositoryList({ fetchMore, loading, repositories }) {
       return (
         <div key={node.id} className="p-3 col-md-6 col-sm-12">
           <RepositoryItem {...node} />
+          <Issues 
+            repositoryName={node.name}
+            repositoryOwner={node.owner.login}
+          />
         </div>
       );
     });

@@ -176,7 +176,7 @@ const RepositoryItem = ({
     updateSubscriptionPayLoad.error;
   
   return (
-    <div className="RepositoryItem p-3 border">
+    <div className="RepositoryItem p-3 border overflow-hidden">
       <div className="RepositoryItem-header d-flex justify-content-between">
         <div className="RepositoryItem-header-title w-100">
           <h6>

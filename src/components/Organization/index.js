@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
+import Button from "react-bootstrap/Button";
 import RepositoryList from "../Repository";
 import { REPOSITORY_FRAGMENT } from "../Repository";
 import ErrorMessage from "../Error/ErrorMessage";
@@ -28,9 +30,26 @@ const GET_REPOSITORY_OF_ORGANIZATION = gql`
   }
   ${REPOSITORY_FRAGMENT}
 `;
-
+// constatnt values
+const INITIAL_ORGANIZATIONS = ["EbookFoundation", "facebook", "FreeCodeCamp", "microsoft"];
+// Component
 function Organization() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialOrganizations = useMemo(() => {
+    const organizations = INITIAL_ORGANIZATIONS.map((organization) => {
+      return (
+        <Button
+          variant="secondary"
+          className="mx-2"
+          key={organization}
+          onClick={() => setSearchParams({ organization })}
+        >
+          {organization}
+        </Button>
+      );
+    });
+    return organizations;
+  }, [INITIAL_ORGANIZATIONS]);
   const organizationName = searchParams.get("organization") || "";
   const { data, error, fetchMore, loading } = useQuery(
     GET_REPOSITORY_OF_ORGANIZATION,
@@ -57,7 +76,14 @@ function Organization() {
             />
           </div>
         </div>
-      ) : <div className="d-flex justify-content-center align-items-center vh-100">please search a organiation...</div>}
+      ) : (
+        <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+          <div className="d-flex justify-content-center align-items-center">
+            {initialOrganizations}
+          </div>
+          <p>please search a organiation...</p>
+        </div>
+      )}
     </>
   );
 }

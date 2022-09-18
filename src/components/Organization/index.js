@@ -65,12 +65,12 @@ function Organization() {
   if (error) return <ErrorMessage error={error} />;
   return (
     <>
-      {data ? (
+      {data && data.organization ? (
         <div className="Profile row pt-3">
           <div className="Profile_info col-md-3 d-none d-lg-block"></div>
           <div className="Profile_repositories col-md-9 col-sm-12">
             <RepositoryList
-              repositories={data.organization.repositories || {}}
+              repositories={data.organization.repositories}
               fetchMore={fetchMore}
               loading={loading}
             />

@@ -15,10 +15,11 @@ const Button = ({
 
 function ButtonUnobtrusive({ children, type = "button", ...props }) {
   return (
-    <button type={type} {...props}>
+    <button type={type} {...props} className="btn btn-outline-econdary border border-top-0 d-block mx-auto">
       {children}
     </button>
   );
 }
-export {ButtonUnobtrusive}
+
+export { ButtonUnobtrusive };
 export default Button;

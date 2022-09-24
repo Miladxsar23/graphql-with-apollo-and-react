@@ -5,11 +5,10 @@ const cache = new InMemoryCache({
   typePolicies: {
     Repository: {
       fields: {
-        name: {
-          read(name) {
-            return name.toUpperCase();
-          },
-        },
+        issues: {
+          ...relayStylePagination(), 
+          keyArgs:["states"]
+        }
       },
     },
     User: {

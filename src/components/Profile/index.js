@@ -30,7 +30,7 @@ export const GET_REPOSITORY_OF_CURRENT_USER = gql`
   ${REPOSITORY_FRAGMENT}
 `;
 ///////////////////////////////Viiew Layer<Component>//////////////////////////////
-function Profile(props) {
+function Profile() {
   const { loading, error, fetchMore, data } = useQuery(
     GET_REPOSITORY_OF_CURRENT_USER,
     {

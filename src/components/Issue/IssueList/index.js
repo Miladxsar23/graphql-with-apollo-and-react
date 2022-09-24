@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
-import Loading from "../../Loading";
+import FetchMore from "../../FetchMore";
+import Spinner from "../../Spinner";
 import ErrorMessage from "../../Error/ErrorMessage";
 import IssueItem from "../IssueItem";
 import "./index.scss";
@@ -12,9 +13,16 @@ const GET_ISSUES_FROM_REPOSITORY = gql`
   query GetIssuesFromRepository(
     $repositoryName: String!
     $repositoryOwner: String!
+    $issueState: IssueState!
+    $cursor: String
   ) {
     repository(name: $repositoryName, owner: $repositoryOwner) {
-      issues(first: 5) {
+      id
+      issues(last: 5, states: [$issueState], after: $cursor) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         edges {
           node {
             id
@@ -33,7 +41,7 @@ const GET_ISSUES_FROM_REPOSITORY = gql`
 const ISSUE_STATES = {
   NONE: "NONE",
   OPEN: "OPEN",
-  CLOSE: "CLOSE",
+  CLOSE: "CLOSED",
 };
 
 const TRANSITION_LABELS = {
@@ -54,23 +62,20 @@ const isShow = (issueState) => {
 // Components
 function Issues({ repositoryName, repositoryOwner }) {
   const [issueState, setIssueState] = React.useState(ISSUE_STATES.NONE);
-  const skip = !isShow(issueState);
-  const { data, error, loading } = useQuery(GET_ISSUES_FROM_REPOSITORY, {
-    variables: {
-      repositoryName,
-      repositoryOwner,
-    },
-    skip
-  });
+  const { data, error, loading, fetchMore } = useQuery(
+    GET_ISSUES_FROM_REPOSITORY,
+    {
+      variables: {
+        repositoryName,
+        repositoryOwner,
+        issueState,
+      },
+      notifyOnNetworkStatusChange: true,
+      skip : !isShow(issueState)
+    }
+  );
   if (error) return <ErrorMessage error={error} />;
-  if (loading && !data?.repository) return <Loading />;
-  const filterIssues = data?.repository?.issues?.edges && {
-    issues: {
-      edges: data.repository.issues.edges.filter(
-        (issue) => issue.node.state === issueState
-      ),
-    },
-  };
+  if (loading && !data?.repository) return <Spinner />;
   return (
     <>
       <div className="Issues_button w-100 d-block">
@@ -80,10 +85,18 @@ function Issues({ repositoryName, repositoryOwner }) {
           {TRANSITION_LABELS[issueState]}
         </ButtonUnobtrusive>
       </div>
-      {data && data.repository && filterIssues.issues.edges.length !== 0 ? (
-        <IssueList issues={filterIssues.issues} />
-      ) : (
-        issueState !== ISSUE_STATES.NONE && <div>no issues....</div>
+      {isShow(issueState) && (
+        <>
+          <IssueList issues={data.repository.issues} />
+          <FetchMore
+            fetchMore={fetchMore}
+            loading={loading}
+            hasNextPage={data.repository.issues.pageInfo.hasNextPage}
+            variables={{ cursor: data.repository.issues.pageInfo.endCursor }}
+          >
+            more
+          </FetchMore>
+        </>
       )}
     </>
   );

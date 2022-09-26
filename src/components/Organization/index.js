@@ -31,7 +31,12 @@ const GET_REPOSITORY_OF_ORGANIZATION = gql`
   ${REPOSITORY_FRAGMENT}
 `;
 // constatnt values
-const INITIAL_ORGANIZATIONS = ["EbookFoundation", "facebook", "FreeCodeCamp", "microsoft"];
+const INITIAL_ORGANIZATIONS = [
+  "EbookFoundation",
+  "facebook",
+  "FreeCodeCamp",
+  "microsoft",
+];
 // Component
 function Organization() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,14 +55,13 @@ function Organization() {
     });
     return organizations;
   }, [INITIAL_ORGANIZATIONS]);
-  const organizationName = searchParams.get("organization") || "";
   const { data, error, fetchMore, loading } = useQuery(
     GET_REPOSITORY_OF_ORGANIZATION,
     {
       variables: {
-        organizationName,
+        organizationName: searchParams.get("organization"),
       },
-      skip: organizationName === "",
+      skip: searchParams.get("organization") === "",
       notifyOnNetworkStatusChange: true,
     }
   );
@@ -65,7 +69,7 @@ function Organization() {
   if (error) return <ErrorMessage error={error} />;
   return (
     <>
-      {data && data.organization ? (
+      {data?.organization ? (
         <div className="Profile row pt-3">
           <div className="Profile_info col-md-3 d-none d-lg-block"></div>
           <div className="Profile_repositories col-md-9 col-sm-12">

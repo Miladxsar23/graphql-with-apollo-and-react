@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMemo } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery } from "@apollo/client";
 import FetchMore from "../../FetchMore";
 import Spinner from "../../Spinner";
 import ErrorMessage from "../../Error/ErrorMessage";
@@ -18,7 +18,7 @@ const GET_ISSUES_FROM_REPOSITORY = gql`
   ) {
     repository(name: $repositoryName, owner: $repositoryOwner) {
       id
-      issues(last: 5, states: [$issueState], after: $cursor) {
+      issues(first: 5, states: [$issueState], after: $cursor) {
         pageInfo {
           hasNextPage
           endCursor
@@ -59,6 +59,26 @@ const TRANSITION_STATE = {
 const isShow = (issueState) => {
   return issueState !== ISSUE_STATES.NONE;
 };
+const prefetchIssues = (
+  client,
+  cursor,
+  issueState,
+  repositoryOwner,
+  repositoryName
+) => {
+  const nextIssueState = TRANSITION_STATE[issueState];
+  if (isShow(nextIssueState)) {
+    client.query({
+      query: GET_ISSUES_FROM_REPOSITORY,
+      variables: {
+        cursor,
+        issueState: nextIssueState,
+        repositoryOwner,
+        repositoryName,
+      },
+    });
+  }
+};
 // Components
 function Issues({ repositoryName, repositoryOwner }) {
   const [issueState, setIssueState] = React.useState(ISSUE_STATES.NONE);
@@ -71,7 +91,7 @@ function Issues({ repositoryName, repositoryOwner }) {
         issueState,
       },
       notifyOnNetworkStatusChange: true,
-      skip : !isShow(issueState)
+      skip: !isShow(issueState),
     }
   );
   if (error) return <ErrorMessage error={error} />;
@@ -79,11 +99,13 @@ function Issues({ repositoryName, repositoryOwner }) {
   return (
     <>
       <div className="Issues_button w-100 d-block">
-        <ButtonUnobtrusive
-          onClick={() => setIssueState(TRANSITION_STATE[issueState])}
-        >
-          {TRANSITION_LABELS[issueState]}
-        </ButtonUnobtrusive>
+        <IssueFilter
+          issueState={issueState}
+          onChangeIssueState={setIssueState}
+          repositoryName={repositoryName}
+          repositoryOwner={repositoryOwner}
+          cursor={data && data.repository.issues.pageInfo.endCursor}
+        />
       </div>
       {isShow(issueState) && (
         <>
@@ -101,7 +123,34 @@ function Issues({ repositoryName, repositoryOwner }) {
     </>
   );
 }
-
+function IssueFilter({
+  cursor,
+  issueState,
+  onChangeIssueState,
+  repositoryName,
+  repositoryOwner,
+}) {
+  const client = useApolloClient();
+  const handleClickButton = (evt) => {
+    onChangeIssueState(TRANSITION_STATE[issueState]);
+  };
+  return (
+    <ButtonUnobtrusive
+      onClick={handleClickButton}
+      onMouseOver={() =>
+        prefetchIssues(
+          client,
+          cursor,
+          issueState,
+          repositoryOwner,
+          repositoryName
+        )
+      }
+    >
+      {TRANSITION_LABELS[issueState]}
+    </ButtonUnobtrusive>
+  );
+}
 function IssueList({ issues }) {
   const issuesListEL = useMemo(() => {
     return issues.edges.map(({ node }) => {

@@ -61,7 +61,7 @@ function Organization() {
       variables: {
         organizationName: searchParams.get("organization"),
       },
-      skip: searchParams.get("organization") === "",
+      skip: searchParams.get("organization") === null,
       notifyOnNetworkStatusChange: true,
     }
   );

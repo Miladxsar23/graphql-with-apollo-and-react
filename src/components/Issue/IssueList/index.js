@@ -82,6 +82,7 @@ const prefetchIssues = (
 // Components
 function Issues({ repositoryName, repositoryOwner }) {
   const [issueState, setIssueState] = React.useState(ISSUE_STATES.NONE);
+  const [showComment, setShowComment] = React.useState(false);
   const { data, error, loading, fetchMore } = useQuery(
     GET_ISSUES_FROM_REPOSITORY,
     {
@@ -109,7 +110,13 @@ function Issues({ repositoryName, repositoryOwner }) {
       </div>
       {isShow(issueState) && (
         <>
-          <IssueList issues={data.repository.issues} />
+          <IssueList
+            issues={data.repository.issues}
+            repositoryName={repositoryName}
+            repositoryOwner={repositoryOwner}
+            isShowComment={showComment}
+            onShowComment={setShowComment}
+          />
           <FetchMore
             fetchMore={fetchMore}
             loading={loading}
@@ -151,12 +158,10 @@ function IssueFilter({
     </ButtonUnobtrusive>
   );
 }
-function IssueList({ issues }) {
-  const issuesListEL = useMemo(() => {
-    return issues.edges.map(({ node }) => {
-      return <IssueItem key={node.id} {...node} />;
-    });
-  }, [issues]);
+function IssueList({ issues, ...props }) {
+  const issuesListEL = issues.edges.map(({ node }) => {
+    return <IssueItem key={node.id} {...node} {...props} />;
+  });
   return <div className="IssueList">{issuesListEL}</div>;
 }
 

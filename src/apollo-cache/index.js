@@ -6,9 +6,9 @@ const cache = new InMemoryCache({
     Repository: {
       fields: {
         issues: {
-          ...relayStylePagination(), 
-          keyArgs:["states"]
-        }
+          ...relayStylePagination(),
+          keyArgs: ["states"],
+        },
       },
     },
     User: {
@@ -19,6 +19,11 @@ const cache = new InMemoryCache({
     Organization: {
       fields: {
         repositories: relayStylePagination(),
+      },
+    },
+    Issue: {
+      fields: {
+        comments: relayStylePagination(),
       },
     },
   },

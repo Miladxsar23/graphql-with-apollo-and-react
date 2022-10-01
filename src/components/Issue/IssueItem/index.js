@@ -10,10 +10,8 @@ function IssueItem({
   bodyHTML,
   repositoryOwner,
   repositoryName,
-  isShowComment,
-  onShowComment,
 }) {
-
+  const [showComment, setShowComment] = React.useState(false);
   return (
     <div className="IssueItem">
       <div className="IssueItem-content">
@@ -22,10 +20,10 @@ function IssueItem({
         </h3>
       </div>
       <div dangerouslySetInnerHTML={{ __html: bodyHTML }}></div>
-      <Button variant="primary" onClick={() => onShowComment(!isShowComment)}>
+      <Button variant="primary" onClick={() => setShowComment(!showComment)}>
         Show comments
       </Button>
-      {isShowComment && (
+      {showComment && (
         <Comments
           id={id}
           repositoryOwner={repositoryOwner}

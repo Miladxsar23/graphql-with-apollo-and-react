@@ -8,7 +8,10 @@ const cache = new InMemoryCache({
         issues: {
           ...relayStylePagination(),
           keyArgs: ["states"],
-        },
+        }, 
+        issue : {
+          keyArgs : ["number"]
+        }
       },
     },
     User: {
@@ -21,12 +24,13 @@ const cache = new InMemoryCache({
         repositories: relayStylePagination(),
       },
     },
-    Issue: {
-      fields: {
-        comments: relayStylePagination(),
-      },
-    },
+    Issue : {
+      fields : {
+        comments : relayStylePagination()
+      }
+    }
   },
+
 });
 
 export default cache;

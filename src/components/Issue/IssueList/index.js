@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useMemo } from "react";
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import FetchMore from "../../FetchMore";
 import Spinner from "../../Spinner";
@@ -82,7 +81,6 @@ const prefetchIssues = (
 // Components
 function Issues({ repositoryName, repositoryOwner }) {
   const [issueState, setIssueState] = React.useState(ISSUE_STATES.NONE);
-  const [showComment, setShowComment] = React.useState(false);
   const { data, error, loading, fetchMore } = useQuery(
     GET_ISSUES_FROM_REPOSITORY,
     {
@@ -114,8 +112,6 @@ function Issues({ repositoryName, repositoryOwner }) {
             issues={data.repository.issues}
             repositoryName={repositoryName}
             repositoryOwner={repositoryOwner}
-            isShowComment={showComment}
-            onShowComment={setShowComment}
           />
           <FetchMore
             fetchMore={fetchMore}
@@ -158,9 +154,16 @@ function IssueFilter({
     </ButtonUnobtrusive>
   );
 }
-function IssueList({ issues, ...props }) {
+function IssueList({ issues, repositoryName, repositoryOwner }) {
   const issuesListEL = issues.edges.map(({ node }) => {
-    return <IssueItem key={node.id} {...node} {...props} />;
+    return (
+      <IssueItem
+        key={node.id}
+        repositoryName={repositoryName}
+        repositoryOwner={repositoryOwner}
+        {...node}
+      />
+    );
   });
   return <div className="IssueList">{issuesListEL}</div>;
 }

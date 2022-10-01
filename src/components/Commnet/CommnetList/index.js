@@ -1,7 +1,6 @@
 import * as React from "react";
 import { gql, useQuery } from "@apollo/client";
 import "./index.scss";
-import COMMENT_FRAGMENT from "../fragment";
 import Spinner from "../../Spinner";
 import ErrorMessage from "../../Error/ErrorMessage";
 import CommentAdd from "../CommentAdd";
@@ -26,14 +25,18 @@ const GET_COMMENTS_FROM_ISSUE = gql`
           }
           edges {
             node {
-              ...comment
+                id
+                bodyHTML
+                author {
+                  login
+                }
+                createdAt
             }
           }
         }
       }
     }
   }
-  ${COMMENT_FRAGMENT}
 `;
 
 // implement Component
@@ -74,6 +77,7 @@ function CommentList({
   number,
   fetchMore,
 }) {
+    console.log(comments)
   const commentsEl = comments.edges.map(({ node }) => {
     return <CommentItem key={node.id} comment={node} />;
   });

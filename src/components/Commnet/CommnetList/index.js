@@ -1,5 +1,5 @@
 import * as React from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery } from "@apollo/client";
 import "./index.scss";
 import Spinner from "../../Spinner";
 import ErrorMessage from "../../Error/ErrorMessage";
@@ -25,12 +25,12 @@ const GET_COMMENTS_FROM_ISSUE = gql`
           }
           edges {
             node {
-                id
-                bodyHTML
-                author {
-                  login
-                }
-                createdAt
+              id
+              bodyHTML
+              author {
+                login
+              }
+              createdAt
             }
           }
         }
@@ -77,12 +77,12 @@ function CommentList({
   number,
   fetchMore,
 }) {
-    console.log(comments)
+  const client = useApolloClient();
   const commentsEl = comments.edges.map(({ node }) => {
     return <CommentItem key={node.id} comment={node} />;
   });
   return (
-    <div className="CommentList">
+    <div className="CommentList my-2">
       {commentsEl}
       <FetchMore
         loading={loading}

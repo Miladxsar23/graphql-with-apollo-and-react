@@ -38,6 +38,24 @@ const GET_COMMENTS_FROM_ISSUE = gql`
     }
   }
 `;
+// helper functions
+function prefetchComment(
+  client,
+  cursor,
+  repositoryOwner,
+  repositoryName,
+  number
+) {
+  client.query({
+    query: GET_COMMENTS_FROM_ISSUE,
+    variables: {
+      cursor,
+      repositoryOwner,
+      repositoryName,
+      number,
+    },
+  });
+}
 
 // implement Component
 function Comments({ id, repositoryOwner, repositoryName, number }) {
@@ -77,12 +95,27 @@ function CommentList({
   number,
   fetchMore,
 }) {
-  const client = useApolloClient();
+  const client = useApolloClient()
   const commentsEl = comments.edges.map(({ node }) => {
     return <CommentItem key={node.id} comment={node} />;
   });
+  const hanldeScrollFetchMore = (evt) => {
+    if (
+      evt.target.scrollHeight - evt.target.clientHeight ===
+      evt.target.scrollTop
+    ) {
+      console.log(comments.pageInfo.endCursor)
+      prefetchComment(
+        client,
+        comments.pageInfo.endCursor,
+        repositoryOwner,
+        repositoryName,
+        number
+      );
+    }
+  };
   return (
-    <div className="CommentList my-2">
+    <div onScroll={hanldeScrollFetchMore} className="CommentList my-2">
       {commentsEl}
       <FetchMore
         loading={loading}

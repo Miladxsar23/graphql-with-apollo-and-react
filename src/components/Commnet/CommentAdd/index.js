@@ -24,6 +24,63 @@ const ADD_COMMENT_TO_ISSUE = gql`
   }
 `;
 
+// update functions
+function updateAddComment(
+  cache,
+  {
+    data: {
+      addComment: {
+        commentEdge: {
+          node: { id, bodyHTML, author, createdAt, cursor },
+        },
+      },
+    },
+  },
+  issueId
+) {
+  const newCommentRef = cache.writeFragment({
+    id: `IssueComment:${id}`,
+    fragment: gql`
+      fragment comment on IssueComment {
+        id
+        bodyHTML
+        author {
+          login
+        }
+        createdAt
+      }
+    `,
+    data: {
+      id,
+      bodyHTML,
+      author,
+      createdAt,
+    },
+  });
+  const newComment = {
+    __typename : "IssueCommentEdge", 
+    cursor, 
+    node : {...newCommentRef}
+  }
+  cache.modify({
+    id: cache.identify({ __typename: "Issue", id: issueId }),
+    fields: {
+      comments(existing = {}) {
+
+        return {
+          ...existing,
+          pageInfo :{
+            ...existing.pageInfo, 
+            hasNextPage : true, 
+            endCursor : cursor
+          },
+          edges: [...existing.edges, newComment],
+        };
+      },
+    },
+  });
+}
+
 function CommentAdd({ issueId }) {
   const bodyInput = React.useRef("");
   const [addComment, { error, data, loading }] = useMutation(
@@ -32,6 +89,9 @@ function CommentAdd({ issueId }) {
       variables: {
         id: issueId,
       },
+      update : (cache, data) => {
+        updateAddComment(cache, data, issueId)
+      }
     }
   );
   const onSubmit = (evt) => {
